@@ -1,0 +1,53 @@
+name: Off Grid Stores - All Things Off-Grid Solar
+description: >-
+  Shopify-hosted off-grid solar e-commerce storefront exposing agent-native commerce interfaces (UCP discovery, hosted
+  MCP server, llms.txt) and standard read-only Shopify storefront JSON endpoints. Sells solar kits, generators, portable
+  panels, LiFePO4 batteries, inverters, and charge controllers.
+url: https://raw.githubusercontent.com/api-evangelist/off-grid-stores-all-things-off-grid-solar/refs/heads/main/apis.yml
+created: '2026-08-26'
+modified: '2026-08-26'
+specificationVersion: '0.21'
+tags:
+  - off-grid solar
+  - renewable energy
+  - backup power
+  - solar generators
+  - LiFePO4 batteries
+  - inverters
+  - e-commerce
+  - retail
+  - agent commerce
+  - homesteading
+apis:
+  - name: Off Grid Stores Agent Commerce (UCP/MCP)
+    description: >-
+      Agent-native commerce surface: hosted MCP server for cart/checkout, UCP discovery document, llms.txt agent
+      instructions, and read-only Shopify storefront JSON endpoints. No provider-authored REST/OpenAPI contract exists.
+    humanURL: https://offgridstores.com/llms.txt
+    baseURL: https://offgridstores.com
+    tags:
+      - off-grid solar
+      - renewable energy
+      - backup power
+      - solar generators
+      - LiFePO4 batteries
+      - inverters
+      - e-commerce
+      - retail
+      - agent commerce
+      - homesteading
+    properties:
+      - type: LLMsTxt
+        url: https://offgridstores.com/llms.txt
+      - type: MCPServer
+        url: https://offgridstores.myshopify.com/api/ucp/mcp
+      - type: Documentation
+        url: https://offgridstores.com/.well-known/ucp
+maintainers:
+  - FN: Off Grid Stores - All Things Off-Grid Solar
+    url: https://offgridstores.com
+generated:
+  by: apis.io/add
+  model: claude-opus-4-8
+  confidence: 90
+  at: '2026-08-26T11:00:48.037Z'
