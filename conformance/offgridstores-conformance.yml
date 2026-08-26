@@ -1,0 +1,155 @@
+generated: '2026-08-26'
+method: probed
+source: >-
+  https://offgridstores.com/.well-known/ucp, https://offgridstores.com/.well-known/oauth-authorization-server,
+  https://offgridstores.com/.well-known/oauth-protected-resource, live MCP initialize/tools/list and
+  GraphQL introspection probes on 2026-08-26
+description: >-
+  Cross-cutting and domain standards Off Grid Stores' own contracts declare. Everything below is
+  evidenced by a document served from an offgridstores.com URL or by a live response from an
+  offgridstores.com endpoint; nothing is taken from a marketing claim.
+standards:
+- id: ucp
+  name: Universal Commerce Protocol
+  version: '2026-04-08'
+  conforms: true
+  domain_standard: true
+  sector: commerce
+  evidence:
+    url: https://offgridstores.com/.well-known/ucp
+    status: 200
+    detail: >-
+      The merchant profile declares ucp.version 2026-04-08 with supported_versions 2026-04-08 and
+      2026-01-23, a dev.ucp.shopping service with transport "mcp" and endpoint /api/ucp/mcp plus an
+      "embedded" transport, and capability URNs dev.ucp.shopping.checkout, .cart, .order,
+      .fulfillment, .discount, .catalog.search and .catalog.lookup, each bound to a ucp.dev JSON
+      Schema. It also declares the Shopify extension capability dev.shopify.catalog and three
+      payment handlers (com.google.pay, dev.shopify.card, dev.shopify.shop_pay) with merchant_name
+      "Off Grid Stores" and merchant_origin offgridstores.com. The live server echoes the version in
+      the x-shopify-ucp-mcp-api-version response header.
+- id: mcp
+  name: Model Context Protocol
+  version: '2025-06-18'
+  conforms: true
+  evidence:
+    url: https://offgridstores.com/api/ucp/mcp
+    status: 200
+    detail: >-
+      initialize returned protocolVersion 2025-06-18 with serverInfo universal-commerce 0.1.0 and
+      tools/prompts/resources/logging capabilities. https://offgridstores.com/api/mcp returned the
+      same protocol version with serverInfo storefront-renderer 0.1.0.
+- id: jsonrpc2
+  name: JSON-RPC 2.0
+  conforms: true
+  evidence:
+    url: https://offgridstores.com/api/ucp/mcp
+    status: 200
+    detail: All MCP responses carry jsonrpc "2.0" with matching id, and errors use the standard code/message/data envelope.
+- id: json-schema
+  name: JSON Schema 2020-12
+  conforms: true
+  evidence:
+    url: https://offgridstores.com/api/ucp/mcp
+    status: 200
+    detail: Every tool inputSchema declares $schema https://json-schema.org/draft/2020-12/schema.
+- id: graphql
+  name: GraphQL
+  conforms: true
+  evidence:
+    url: https://offgridstores.com/api/2025-10/graphql.json
+    status: 200
+    detail: Full introspection returned 422 types, 34 query root fields and 41 mutations.
+- id: relay-cursor-connections
+  name: GraphQL Cursor Connections (Relay)
+  conforms: true
+  evidence:
+    url: graphql/offgridstores-storefront.graphql
+    detail: >-
+      Collection fields expose first/after/last/before with *Connection types carrying pageInfo and
+      edges/node.
+- id: oauth2
+  name: OAuth 2.0 Authorization Server Metadata (RFC 8414)
+  conforms: true
+  evidence:
+    url: https://offgridstores.com/.well-known/oauth-authorization-server
+    status: 200
+    detail: Serves issuer, authorization_endpoint, token_endpoint, jwks_uri, scopes_supported, grant_types_supported.
+- id: oauth2-pkce
+  name: PKCE (RFC 7636)
+  conforms: true
+  evidence:
+    url: https://offgridstores.com/.well-known/oauth-authorization-server
+    status: 200
+    detail: code_challenge_methods_supported ["S256"].
+- id: rfc9728
+  name: OAuth 2.0 Protected Resource Metadata (RFC 9728)
+  conforms: true
+  evidence:
+    url: https://offgridstores.com/.well-known/oauth-protected-resource
+    status: 200
+    detail: 'resource https://offgridstores.com, authorization_servers [account.offgridstores.com, shopify.com/authentication/55184621620], bearer_methods_supported ["header"].'
+- id: oidc
+  name: OpenID Connect Discovery
+  conforms: true
+  evidence:
+    url: https://offgridstores.com/.well-known/openid-configuration
+    status: 200
+    detail: >-
+      Serves id_token_signing_alg_values_supported RS256, subject_types_supported public and the
+      standard claims set. Byte-identical to the oauth-authorization-server document.
+- id: llms-txt
+  name: llms.txt
+  conforms: true
+  evidence:
+    url: https://offgridstores.com/llms.txt
+    status: 200
+    detail: >-
+      text/markdown agent contract mirroring /agents.md, which is itself listed in a dedicated
+      /sitemap_agentic_discovery.xml.
+- id: sitemaps-xml
+  name: Sitemaps XML 0.9
+  conforms: true
+  evidence:
+    url: https://offgridstores.com/sitemap.xml
+    status: 200
+    detail: >-
+      sitemapindex linking product, page, collection and blog sitemaps plus
+      sitemap_agentic_discovery.xml.
+- id: rfc9457
+  name: Problem Details for HTTP APIs (RFC 9457)
+  conforms: false
+  evidence:
+    detail: >-
+      No application/problem+json response was observed on any surface. Errors use the JSON-RPC error
+      envelope on MCP and the GraphQL errors[] envelope with extensions.code on GraphQL.
+- id: openapi
+  name: OpenAPI
+  conforms: false
+  evidence:
+    url: https://offgridstores.com/openapi.json
+    status: 404
+    detail: >-
+      No OpenAPI or Swagger document at /openapi.json or /swagger.json (both HTTP 404 with an empty
+      body) on offgridstores.com or offgridstores.myshopify.com. /openapi.yaml and /api-docs 301 to
+      the storefront homepage, which is a soft 404, not a spec. /.well-known/api-catalog is 404. The
+      only OpenRPC schemas referenced from the UCP profile are ucp.dev's own protocol schemas, not a
+      contract authored or served by this merchant.
+- id: a2a
+  name: A2A Agent Card
+  conforms: false
+  evidence:
+    url: https://offgridstores.com/.well-known/agent-card.json
+    status: 404
+    detail: HTML 404 at both /.well-known/agent-card.json and the legacy /.well-known/agent.json.
+- id: security-txt
+  name: security.txt (RFC 9116)
+  conforms: false
+  evidence:
+    url: https://offgridstores.com/.well-known/security.txt
+    status: 404
+compliance:
+  published_certifications: []
+  note: >-
+    No trust center, SOC 2/ISO 27001/PCI attestation page or vulnerability-disclosure program was
+    found on any offgridstores.com host; probe-security-programs reported vdp=none trust=none. No
+    Compliance pointer was emitted.

@@ -1,0 +1,88 @@
+generated: '2026-08-26'
+method: probed
+source: live probes of https://offgridstores.com/.well-known/*, https://offgridstores.myshopify.com/.well-known/* and https://account.offgridstores.com/.well-known/* on 2026-08-26
+description: >-
+  Results of probing the /.well-known/ discovery surface on every host reachable from apis.yml.
+  offgridstores.com is a Shopify-hosted storefront; the OAuth/OIDC metadata it serves is Shopify's
+  customer-account authorization server bound to THIS shop (issuer
+  https://shopify.com/authentication/55184621620, user-facing endpoints on account.offgridstores.com),
+  and /.well-known/ucp is this merchant's own Universal Commerce Protocol profile naming Off Grid
+  Stores as the merchant (merchant_name "Off Grid Stores", merchant_origin offgridstores.com,
+  shop_id 55184621620). Paths that returned an HTML 404 page are recorded as absent and not saved.
+hosts:
+- host: https://offgridstores.com
+  documents:
+  - path: /.well-known/ucp
+    status: 200
+    type: application/json
+    file: offgridstores-ucp.json
+  - path: /.well-known/openid-configuration
+    status: 200
+    type: application/json
+    file: offgridstores-openid-configuration.json
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    type: application/json
+    file: offgridstores-oauth-authorization-server.json
+    note: byte-identical to the openid-configuration document
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    type: application/json
+    file: offgridstores-oauth-protected-resource.json
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/mcp.json
+    status: 404
+- host: https://offgridstores.myshopify.com
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    type: application/json
+    note: identical payload to the offgridstores.com document; not saved twice
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    type: application/json
+    note: identical payload to the offgridstores.com document; not saved twice
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    type: application/json
+    note: 'same document with resource https://offgridstores.myshopify.com'
+  - path: /.well-known/security.txt
+    status: 301
+  - path: /.well-known/api-catalog
+    status: 301
+  - path: /.well-known/agent-card.json
+    status: 301
+  - path: /.well-known/agent.json
+    status: 301
+- host: https://account.offgridstores.com
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    type: application/json
+    note: the customer-account authorization server itself; same issuer
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    type: application/json
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+notes:
+- >-
+  No A2A agent card is served at either /.well-known/agent-card.json or the legacy
+  /.well-known/agent.json on any host; offgridstores.com returns a real HTML 404 page and
+  offgridstores.myshopify.com 301s to the primary domain. No a2a/ artifact was written and no
+  AgentCard pointer was emitted.
+- No security.txt is published on any host, so no SecurityTxt pointer was emitted.
+- >-
+  /.well-known/api-catalog is absent everywhere, but the store does publish an agent-discovery
+  sitemap at /sitemap_agentic_discovery.xml (HTTP 200) which lists /agents.md.

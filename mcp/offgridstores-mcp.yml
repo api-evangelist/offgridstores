@@ -1,0 +1,145 @@
+generated: '2026-08-26'
+method: probed
+status: published
+source: https://offgridstores.com/llms.txt
+description: >-
+  Off Grid Stores serves TWO live, remote Model Context Protocol servers from its own domain, both
+  advertised in its /llms.txt and /agents.md. They are Shopify platform servers bound to this
+  merchant's shop (shop_id 55184621620, offgridstores.myshopify.com) and served under
+  offgridstores.com, so the endpoints, the catalog they expose and the carts/checkouts they create
+  are Off Grid Stores'. Tool lists below were captured verbatim from live `tools/list` calls on
+  2026-08-26 and saved alongside this file with their full JSON Schema inputSchemas.
+deployment:
+  mode: remote
+  endpoint: https://offgridstores.com/api/ucp/mcp
+  auth: none
+  verified: probed
+  checked: '2026-08-26'
+  note: >-
+    `tools/list` answers anonymously on both servers. Invocation differs: /api/mcp executes
+    tools/call anonymously (search_catalog for "solar generator" returned real Off Grid Stores
+    products during the probe), while /api/ucp/mcp returns HTTP 422 with JSON-RPC error -32001
+    "UCP discovery failed / invalid_profile_url — Unable to fetch agent profile: Missing profile
+    uri", so its write path requires a resolvable UCP agent profile (and, per the tool schemas, a
+    Shopify agent identity). No stdio package is published for either server; `auth: none` records
+    what the anonymous discovery path actually needs.
+servers:
+- name: universal-commerce
+  server_version: 0.1.0
+  endpoint: https://offgridstores.com/api/ucp/mcp
+  alternate_endpoint: https://offgridstores.myshopify.com/api/ucp/mcp
+  alternate_endpoint_note: >-
+    The /.well-known/ucp discovery document names the myshopify.com endpoint; /llms.txt names the
+    offgridstores.com one. Both answered tools/list identically on 2026-08-26.
+  transport: http
+  mcp_protocol_version: '2025-06-18'
+  ucp_version: '2026-04-08'
+  api_version_header: 'x-shopify-ucp-mcp-api-version: 2026-04-08'
+  capabilities:
+    tools: {listChanged: true}
+    prompts: {listChanged: true}
+    resources: {listChanged: true}
+    logging: {}
+  auth:
+    list: none
+    call: ucp-agent-profile
+    detail: >-
+      Every tool's inputSchema makes meta.ucp-agent.profile (a URI) REQUIRED. A tools/call without
+      it returns HTTP 422 and JSON-RPC -32001 invalid_profile_url with continue_url
+      https://offgridstores.myshopify.com/. complete_checkout additionally requires
+      meta.idempotency-key.
+  tools_file: offgridstores-ucp-mcp-tools.json
+  tool_count: 13
+  tools:
+  - name: search_catalog
+    category: catalog
+    description: Search for products from the online store, hosted on Shopify.
+  - name: lookup_catalog
+    category: catalog
+    description: Look up multiple products or variants by identifier.
+  - name: get_product
+    category: catalog
+    description: Retrieve complete product detail by identifier. Returns a singular product.
+  - name: create_cart
+    category: cart
+    description: Creates a new cart.
+  - name: get_cart
+    category: cart
+    description: Get the cart contents.
+  - name: update_cart
+    category: cart
+    description: Perform updates to a cart.
+  - name: cancel_cart
+    category: cart
+    description: Cancels a cart.
+  - name: create_checkout
+    category: checkout
+    description: Creates a checkout. Returns line items, totals, discounts and taxes.
+  - name: get_checkout
+    category: checkout
+    description: Returns details about the checkout, including line items, totals, discounts and taxes.
+  - name: update_checkout
+    category: checkout
+    description: Updates a checkout.
+  - name: complete_checkout
+    category: checkout
+    description: >-
+      Completes a checkout and returns the order ID / Thank You Page URL. Requires
+      meta.idempotency-key. Buyer approval is required before payment, per the store's own llms.txt.
+  - name: cancel_checkout
+    category: checkout
+    description: Cancels a checkout.
+  - name: get_order
+    category: order
+    description: Get the details of an order.
+- name: storefront-renderer
+  server_version: 0.1.0
+  endpoint: https://offgridstores.com/api/mcp
+  transport: http
+  mcp_protocol_version: '2025-06-18'
+  capabilities:
+    tools: {listChanged: true}
+    prompts: {listChanged: true}
+    resources: {listChanged: true}
+    logging: {}
+  auth:
+    list: none
+    call: none
+    detail: >-
+      Anonymous end to end. A probe of tools/call search_catalog {"catalog":{"query":"solar
+      generator"}} on 2026-08-26 returned real Off Grid Stores product records with
+      gid://shopify/Product identifiers (e.g. the EcoFlow DELTA Pro 3600Wh portable power station).
+  tools_file: offgridstores-storefront-mcp-tools.json
+  tool_count: 5
+  tools:
+  - name: search_catalog
+    category: catalog
+    description: Search for products from the online store, hosted on Shopify.
+  - name: get_product_details
+    category: catalog
+    description: >-
+      Look up a product by ID; pass `options` to select a specific variant, plus country/language.
+  - name: get_cart
+    category: cart
+    description: Get the cart including items, shipping options, discount info and checkout URL.
+  - name: update_cart
+    category: cart
+    description: >-
+      Add/remove/update line items, buyer identity, delivery addresses and options, discount codes,
+      gift cards and note in one consolidated call.
+  - name: search_shop_policies_and_faqs
+    category: content
+    description: Get facts about the store's policies, products or services.
+discovery:
+- source: https://offgridstores.com/llms.txt
+  status: 200
+  note: names the UCP discovery document, the MCP endpoint and the typical agent flow
+- source: https://offgridstores.com/agents.md
+  status: 200
+  note: canonical agent-facing description of the store; /llms.txt mirrors it verbatim
+- source: https://offgridstores.com/.well-known/ucp
+  status: 200
+  note: UCP merchant profile declaring transport mcp and the endpoint
+- source: https://offgridstores.com/sitemap_agentic_discovery.xml
+  status: 200
+  note: a dedicated agentic-discovery sitemap listing /agents.md

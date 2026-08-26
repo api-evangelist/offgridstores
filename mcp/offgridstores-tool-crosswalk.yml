@@ -1,0 +1,173 @@
+generated: '2026-08-26'
+method: derived
+source: >-
+  Derived by binding the live MCP tool lists (mcp/offgridstores-ucp-mcp-tools.json,
+  mcp/offgridstores-storefront-mcp-tools.json, both captured 2026-08-26) to the anonymously
+  introspected Storefront GraphQL schema (graphql/offgridstores-storefront.graphql) and the
+  storefront JSON endpoints documented in https://offgridstores.com/llms.txt.
+description: >-
+  Off Grid Stores publishes no OpenAPI, so the REST column of this crosswalk is the storefront JSON
+  surface the store documents itself (/products.json, /collections/{handle}/products.json,
+  /products/{handle}.json, /cart.js) and the primary contract column is the Storefront GraphQL
+  schema. No published mapping exists between the MCP tools and the GraphQL root fields; every
+  binding below was made by name and semantics and is graded accordingly.
+surfaces:
+  openapi: null
+  openapi_note: >-
+    No OpenAPI or Swagger document is served on any Off Grid Stores host (see the well-known probe
+    and conformance record).
+  graphql:
+    endpoint: https://offgridstores.com/api/2025-10/graphql.json
+    gated: false
+    note: Full introspection answers anonymously; served version reported as 2025-10.
+  mcp:
+  - endpoint: https://offgridstores.com/api/ucp/mcp
+    gated: partial
+    note: tools/list anonymous; tools/call requires a resolvable meta.ucp-agent.profile URI.
+  - endpoint: https://offgridstores.com/api/mcp
+    gated: false
+    note: tools/list and tools/call both answered anonymously during the probe.
+  json:
+    base: https://offgridstores.com
+    gated: false
+crosswalk:
+- tool: search_catalog
+  server: both
+  category: catalog
+  graphql: [products, search, predictiveSearch]
+  rest: ['GET /products.json', 'GET /collections/{handle}/products.json', 'GET /search?q=&type=product']
+  binding: semantic
+  confidence: high
+  note: >-
+    Probed live on /api/mcp; a "solar generator" query returned gid://shopify/Product records
+    matching /products.json.
+- tool: lookup_catalog
+  server: ucp
+  category: catalog
+  graphql: [nodes, products, productByHandle]
+  rest: ['GET /products/{handle}.json']
+  binding: semantic
+  confidence: medium
+- tool: get_product
+  server: ucp
+  category: catalog
+  graphql: [product, productByHandle]
+  rest: ['GET /products/{handle}.json']
+  binding: semantic
+  confidence: high
+- tool: get_product_details
+  server: storefront
+  category: catalog
+  graphql: [product, productByHandle]
+  rest: ['GET /products/{handle}.json']
+  binding: semantic
+  confidence: high
+  note: The `options` argument maps to Product.variantBySelectedOptions.
+- tool: create_cart
+  server: ucp
+  category: cart
+  graphql: [cartCreate]
+  rest: ['POST /cart/add.js']
+  binding: semantic
+  confidence: high
+- tool: get_cart
+  server: both
+  category: cart
+  graphql: [cart]
+  rest: ['GET /cart.js']
+  binding: semantic
+  confidence: high
+- tool: update_cart
+  server: both
+  category: cart
+  graphql: [cartLinesAdd, cartLinesUpdate, cartLinesRemove, cartBuyerIdentityUpdate, cartDeliveryAddressesAdd,
+    cartDeliveryAddressesReplace, cartDeliveryAddressesUpdate, cartSelectedDeliveryOptionsUpdate,
+    cartDiscountCodesUpdate, cartGiftCardCodesAdd, cartGiftCardCodesRemove, cartNoteUpdate]
+  rest: ['POST /cart/change.js', 'POST /cart/update.js']
+  binding: composite
+  confidence: high
+  note: >-
+    One tool call fans out to many GraphQL mutations; the storefront tool's inputSchema exposes
+    add_items, update_items, remove_line_ids, buyer_identity, delivery_addresses_to_add,
+    delivery_addresses_to_replace, selected_delivery_options, discount_codes, gift_card_codes, note.
+- tool: create_checkout
+  server: ucp
+  category: checkout
+  graphql: [cartCreate, cartPrepareForCompletion]
+  rest: []
+  binding: semantic
+  confidence: medium
+- tool: update_checkout
+  server: ucp
+  category: checkout
+  graphql: [cartBuyerIdentityUpdate, cartDeliveryAddressesUpdate, cartSelectedDeliveryOptionsUpdate,
+    cartPaymentUpdate, cartPrepareForCompletion]
+  rest: []
+  binding: semantic
+  confidence: medium
+- tool: complete_checkout
+  server: ucp
+  category: checkout
+  graphql: [cartSubmitForCompletion]
+  rest: []
+  binding: semantic
+  confidence: medium
+  note: >-
+    Requires meta.idempotency-key. The store's llms.txt states buyer approval is mandatory before
+    payment.
+- tool: get_checkout
+  server: ucp
+  category: checkout
+  graphql: [cartCompletionAttempt]
+  rest: []
+  binding: semantic
+  confidence: low
+- tool: search_shop_policies_and_faqs
+  server: storefront
+  category: content
+  graphql: [shop]
+  rest: ['GET /policies/refund-policy', 'GET /policies/terms-of-service', 'GET /policies/privacy-policy',
+    'GET /policies/shipping-policy', 'GET /pages/faqs']
+  binding: semantic
+  confidence: medium
+  note: >-
+    Shop exposes privacyPolicy, refundPolicy, shippingPolicy, subscriptionPolicy and termsOfService.
+    The store also publishes a human FAQ page at /pages/faqs (HTTP 200).
+mcp_only:
+- tool: cancel_cart
+  reason: No cart-cancel mutation exists in the Storefront GraphQL schema.
+- tool: cancel_checkout
+  reason: No checkout-cancel mutation exists in the Storefront GraphQL schema.
+- tool: get_order
+  reason: >-
+    The Storefront GraphQL Order type is only reachable through Customer, which requires a customer
+    access token; there is no anonymous order query.
+graphql_only:
+- fields: [article, articles, blog, blogByHandle, blogs, page, pageByHandle, pages, menu, metaobject,
+    metaobjects, localization, locations, productRecommendations, productTags, productTypes,
+    collection, collectionByHandle, collections, urlRedirects, sitemap, paymentSettings,
+    publicApiVersions, node, customer]
+  reason: Content, merchandising, localization and account surfaces with no MCP tool.
+- fields: [customerCreate, customerUpdate, customerActivate, customerActivateByUrl, customerRecover,
+    customerReset, customerResetByUrl, customerAccessTokenCreate, customerAccessTokenCreateWithMultipass,
+    customerAccessTokenDelete, customerAccessTokenRenew, customerAddressCreate, customerAddressUpdate,
+    customerAddressDelete, customerDefaultAddressUpdate, cartClone, cartAttributesUpdate,
+    cartMetafieldsSet, cartMetafieldDelete, cartRemovePersonalData, cartBillingAddressUpdate,
+    cartDeliveryAddressesRemove, cartGiftCardCodesUpdate, shopPayPaymentRequestSessionCreate,
+    shopPayPaymentRequestSessionSubmit]
+  reason: Customer-account and Shop Pay mutations with no MCP tool.
+rest_only:
+- endpoints: ['GET /sitemap.xml', 'GET /sitemap_agentic_discovery.xml', 'GET /collections.json', 'GET /robots.txt']
+  reason: Discovery and crawl surfaces with no MCP tool and no GraphQL root field.
+coverage:
+  mcp_tools_total: 18
+  mcp_tools_distinct: 15
+  mcp_tools_shared_by_both_servers: 3
+  mapped_to_graphql: 12
+  mcp_only: 3
+  graphql_root_fields: 75
+  graphql_query_fields: 34
+  graphql_query_fields_mapped: 9
+  graphql_mutation_fields: 41
+  graphql_mutation_fields_mapped: 16
+  graphql_fields_unmapped: 50

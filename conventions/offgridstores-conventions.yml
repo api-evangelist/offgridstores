@@ -1,0 +1,172 @@
+generated: '2026-08-26'
+method: derived
+source: >-
+  Derived from graphql/offgridstores-storefront.graphql, mcp/offgridstores-ucp-mcp-tools.json,
+  mcp/offgridstores-storefront-mcp-tools.json and live probes 2026-08-26; policy text read from
+  https://offgridstores.com/policies/refund-policy and https://offgridstores.com/llms.txt
+description: >-
+  Cross-cutting runtime semantics an agent needs before it calls Off Grid Stores' surfaces. The store
+  publishes no developer conventions page; every rule below is read out of the contracts its host
+  actually serves or out of a policy page on offgridstores.com.
+auth_style:
+  graphql: none for public data; X-Shopify-Customer-Access-Token for customer-scoped fields
+  storefront_mcp: none
+  ucp_mcp: 'required meta.ucp-agent.profile URI on every tools/call (Shopify agent identity)'
+  see: authentication/offgridstores-authentication.yml
+idempotency:
+  supported: true
+  surfaces:
+  - surface: UCP Commerce MCP — complete_checkout
+    mechanism: request field
+    field: meta.idempotency-key
+    required: true
+    detail: >-
+      complete_checkout's inputSchema declares meta.idempotency-key as a REQUIRED string alongside
+      meta.ucp-agent, described as "An idempotency key for completing the checkout." An agent cannot
+      finalise a purchase without supplying one, so double-charge protection is mandatory rather
+      than optional.
+  - surface: Storefront GraphQL — shopPayPaymentRequestSessionSubmit
+    mechanism: argument
+    field: 'idempotencyKey: String!'
+    required: true
+    detail: >-
+      Replay of a used key surfaces as
+      UserErrorsShopPayPaymentRequestSessionUserErrorsCode.IDEMPOTENCY_KEY_ALREADY_USED.
+  scope: per checkout / per payment-request session
+  retention: not published
+  header: null
+  note: >-
+    Idempotency is confined to the payment-completion path. Cart mutations and catalog reads carry no
+    idempotency key; cart mutations are naturally idempotent in effect because they set state rather
+    than append.
+pagination:
+  graphql:
+    style: cursor
+    spec: GraphQL Cursor Connections (Relay)
+    params: [first, after, last, before]
+    response_fields: [pageInfo.hasNextPage, pageInfo.hasPreviousPage, pageInfo.startCursor, pageInfo.endCursor, edges.cursor]
+  json:
+    style: page-and-limit
+    params: [limit, page]
+    example: 'GET https://offgridstores.com/products.json?limit=1&page=2'
+    probed: '2026-08-26'
+    note: >-
+      Verified live; page 1 returned handle "bugout™-130-military-edition" and page 2 returned
+      "bugout™-130-portable-solar-charger" at the same limit.
+  mcp:
+    style: not-exposed
+    note: search_catalog and lookup_catalog expose no cursor or page argument in their inputSchema.
+filtering_and_expansion:
+  graphql:
+  - Connection fields accept `query` search syntax plus `sortKey`/`reverse` on products, collections and search.
+  - Selection-set shaping replaces sparse-fieldset parameters; there is no `fields=` convention.
+  - Product.variantBySelectedOptions and Product.selectedOrFirstAvailableVariant resolve a variant from options.
+  mcp:
+  - get_product_details accepts an `options` object to select a variant, plus `country` and `language`.
+  json:
+  - 'Collection scoping is by path: /collections/{handle}/products.json.'
+metadata:
+  mechanism: metafields
+  detail: >-
+    Cart, Product, Collection, Page, Article, Shop and Customer all expose `metafield(namespace,key)`
+    and `metafields`; carts additionally support cartMetafieldsSet and cartMetafieldDelete.
+request_tracing:
+  header: x-request-id
+  observed: true
+  detail: >-
+    Both the MCP and GraphQL endpoints return an x-request-id on every response
+    (e.g. 45a1d6b1-2ef4-4f4e-92ee-4320b5059ec0-1787771010). The UCP MCP endpoint additionally returns
+    x-shopify-ucp-mcp-api-version: 2026-04-08, and GraphQL returns x-shopify-api-version: 2025-10.
+versioning:
+  see: lifecycle/offgridstores-lifecycle.yml
+  summary: Dated quarterly versions in the URL path; UCP and MCP protocol versions negotiated in-band.
+error_envelope:
+  graphql:
+    shape: 'errors[] { message, locations[], path[], extensions { code, typeName, fieldName } }'
+    http_status_on_error: 200
+    note: A malformed query returns HTTP 200 with an errors[] array; read the body, not the status.
+    user_errors: 'Mutations return a typed *UserError payload (CartUserError, CustomerUserError, …) with code/field/message alongside data.'
+  mcp:
+    shape: 'JSON-RPC 2.0 error { code, message, data }'
+    http_status_on_error: '200 on /api/mcp; 422 observed on /api/ucp/mcp for -32001'
+  see: errors/offgridstores-problem-types.yml
+rate_limit_signalling:
+  see: rate-limits/offgridstores-rate-limits.yml
+  summary: >-
+    No RateLimit-* or X-RateLimit-* headers were observed. GraphQL returns a query-cost figure in
+    extensions.cost.requestedQueryCost; llms.txt states the MCP endpoint is rate-limited per IP with
+    429 back-off.
+agentic_access:
+  robots_posture: allow
+  detail: >-
+    robots.txt explicitly Allows GPTBot, CCBot, Google-Extended and OAI-SearchBot on the whole site,
+    disallows only /admin, /cart, /checkout(s), /orders, /account, /search and /policies, and
+    publishes a dedicated /sitemap_agentic_discovery.xml pointing at /agents.md. Crawl-delay: 1.
+  source: https://offgridstores.com/robots.txt
+dry_run_mode:
+  supported: false
+  detail: >-
+    No test mode, sandbox store, test key prefix or preview flag is published. cartPrepareForCompletion
+    returns totals before submission, which is a preview of cost but not a rehearsal of the write.
+  see: null
+reversibility:
+  grade: verified
+  applicable: true
+  summary: >-
+    Every write surface an agent can reach has a reversal path. Cart and checkout cancellation are
+    callable API operations with no stated window; the post-order reversal is a refund with a
+    window the store states explicitly — 30 days from the delivery date — on its own published
+    refund policy.
+  surfaces:
+  - write_surface: cart
+    operation: create_cart / update_cart
+    reversal: cancel_cart
+    reversal_type: api
+    server: https://offgridstores.com/api/ucp/mcp
+    window_stated: false
+    grade: documented
+    note: >-
+      cancel_cart is published in tools/list with a required cart id. On the Storefront GraphQL side
+      the equivalent reversals are cartLinesRemove, cartDiscountCodesUpdate (to empty) and
+      cartGiftCardCodesRemove; there is no cart-level cancel mutation.
+  - write_surface: checkout
+    operation: complete_checkout
+    reversal: cancel_checkout
+    reversal_type: api
+    server: https://offgridstores.com/api/ucp/mcp
+    window_stated: false
+    grade: documented
+    note: >-
+      cancel_checkout is published in tools/list with a required checkout id. No docs state how long
+      after creation a checkout may be cancelled, or whether it can be cancelled after
+      complete_checkout succeeds.
+  - write_surface: order
+    operation: complete_checkout (order created)
+    reversal: return-and-refund
+    reversal_type: out-of-band
+    window_stated: true
+    window: 30 days from the delivery date
+    window_quote: >-
+      "If you are not completely satisfied with your purchase for any reason, you may return it to us
+      within 30 Days from the delivery date for a refund." … "Customers can open a return 30 days
+      from the date of delivery for most items."
+    conditions:
+    - Item must be unused, in original packaging, with all original contents and no signs of use, wear or damage.
+    - Buyer pays return shipping for buyer's-remorse returns; Off Grid Stores pays for damaged/defective/wrong-item returns.
+    - Refund processing takes up to 3 business days after receipt and inspection, then up to 5 business days to appear on the card.
+    exclusions:
+    - Open food products such as dehydrated or freeze-dried foods are non-returnable.
+    - Items whose product description carries a different policy in its "Returns and Refunds" tab.
+    docs: https://offgridstores.com/policies/refund-policy
+    grade: verified
+    note: >-
+      The window is stated verbatim on the store's own published refund policy, so this surface
+      grades `verified`. There is still no refund, void or reverse OPERATION on any published
+      machine surface: the reversal is a human process started by emailing support@offgridstores.com
+      or using /pages/contact-us, and it issues an RMA or a prepaid label. An agent can tell the
+      buyer the exact window but cannot execute the reversal itself.
+  agent_guidance:
+  - Cancel is cheap up to the moment of completion; treat complete_checkout as the point of no return for an agent.
+  - The store's llms.txt forbids completing payment without explicit, contemporaneous buyer consent, which is its own mitigation for irreversibility.
+  - After completion, an agent's only remedy is to tell the buyer to open a return within 30 days of DELIVERY (not of purchase) by emailing support@offgridstores.com.
+  - Warn the buyer before step 5 that open food products cannot be returned at all.

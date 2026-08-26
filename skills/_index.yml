@@ -1,0 +1,41 @@
+generated: '2026-08-26'
+method: generated
+source: >-
+  Authored from mcp/offgridstores-ucp-mcp-tools.json, mcp/offgridstores-storefront-mcp-tools.json and
+  graphql/offgridstores-storefront.graphql — all captured live from offgridstores.com on 2026-08-26.
+  Every tool name, GraphQL field, error code and policy statement quoted in these skills is present
+  in one of those artifacts or on an offgridstores.com page recorded in this repo.
+description: >-
+  Off Grid Stores publishes no developer documentation and no OpenAPI, so these skills are grounded
+  in the live MCP tool schemas and the introspected Storefront GraphQL schema instead. They exist
+  because the store's own llms.txt invites agents to transact and then imposes rules — buyer approval
+  before payment, a required idempotency key, a required UCP agent profile, a 30-day return window
+  measured from DELIVERY — that an agent will not discover from the tool list alone.
+skills:
+- name: offgridstores-browse-catalog
+  file: offgridstores-browse-catalog.md
+  api: offgridstores-storefront-mcp
+  summary: Anonymous catalog search, product detail and policy lookup across MCP, GraphQL and the storefront JSON endpoints.
+  auth: none
+- name: offgridstores-build-cart
+  file: offgridstores-build-cart.md
+  api: offgridstores-storefront-mcp
+  summary: Create and revise a cart, apply discounts and gift cards, and undo every cart-level change.
+  auth: none
+- name: offgridstores-agent-checkout
+  file: offgridstores-agent-checkout.md
+  api: offgridstores-ucp-commerce-mcp
+  summary: The full UCP checkout flow, with the store's buyer-approval rule, the required idempotency key and agent profile, and what can and cannot be reversed.
+  auth: ucp-agent-profile
+provider_published_skills:
+  found: false
+  probed:
+  - url: https://offgridstores.com/agents.md
+    status: 200
+    note: >-
+      An agent instruction document, not a packaged skill. It recommends installing Shopify's
+      cross-store skill at https://shop.app/SKILL.md, which is Shopify's artifact and not Off Grid
+      Stores', so it was not saved here.
+  - url: https://offgridstores.com/llms.txt
+    status: 200
+    note: mirrors agents.md byte-for-byte apart from the header line

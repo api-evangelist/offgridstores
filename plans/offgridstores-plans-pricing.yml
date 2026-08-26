@@ -1,0 +1,39 @@
+generated: '2026-08-26'
+method: probed
+source: >-
+  https://offgridstores.com/llms.txt, https://offgridstores.com/agents.md,
+  https://offgridstores.com/.well-known/ucp and live anonymous calls to every published surface,
+  2026-08-26
+description: >-
+  Off Grid Stores sells off-grid solar equipment, not API access. There is no developer plan, no API
+  pricing page, no key issuance and no paid tier for any of its machine surfaces: the Storefront
+  GraphQL API, the storefront JSON endpoints and the /api/mcp Storefront MCP server all answered
+  anonymously, and the /api/ucp/mcp UCP server gates only tool invocation behind a UCP agent
+  profile, which costs nothing. The money on this surface is the retail cart, not a subscription.
+plan_count: 0
+plans: []
+access_model:
+  type: free-anonymous
+  key_required: false
+  signup_required: false
+  detail: >-
+    No API key, storefront access token or developer account was needed for any read performed
+    during this pass.
+commercial_note: >-
+  Merchandise pricing is real and is exposed programmatically through the same surfaces —
+  search_catalog and /products.json return prices in the currency's ISO 4217 minor units paired with
+  a currency code, and the store's paymentSettings report USD/US with VISA, MASTERCARD,
+  AMERICAN_EXPRESS, DISCOVER and DINERS_CLUB accepted plus SHOPIFY_PAY, APPLE_PAY and GOOGLE_PAY
+  wallets. That is merchandise pricing, not API pricing, so it is deliberately not recorded here as
+  a plan. The store also runs a consumer loyalty programme at /pages/off-grid-plus-program and a
+  best-price guarantee at /pages/best-price-guarantee; neither is an API plan.
+evidence:
+- url: https://offgridstores.com/api/2025-10/graphql.json
+  status: 200
+  note: full introspection with no credentials
+- url: https://offgridstores.com/api/mcp
+  status: 200
+  note: tools/list and tools/call both anonymous
+- url: https://offgridstores.com/products.json
+  status: 200
+  note: anonymous catalog read
