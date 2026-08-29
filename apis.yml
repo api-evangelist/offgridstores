@@ -10,6 +10,17 @@ description: >-
   /.well-known/ucp declaring UCP 2026-04-08, two live Model Context Protocol servers (a 13-tool UCP
   commerce server and a 5-tool Storefront MCP server), an anonymously introspectable Storefront
   GraphQL API of 422 types, and the storefront JSON endpoints for products, collections and cart.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://offgridstores.com/cdn/shop/files/Off_Grid_Stores_Logo_1204x630.png
 url: https://raw.githubusercontent.com/api-evangelist/off-grid-stores-all-things-off-grid-solar/refs/heads/main/apis.yml
 x-type: company
