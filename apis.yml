@@ -21,6 +21,21 @@ deliveryModel:
   - pricing
   generated: '2026-08-28'
   method: derived
+accessModel:
+  pricing: unknown
+  onboarding: open
+  trial: false
+  try_now: false
+  public: true
+  label: Open access
+  confidence: medium
+  source:
+  - authentication
+  - scopes
+  - rate-limits
+  - security
+  generated: '2026-09-02'
+  method: derived
 image: https://offgridstores.com/cdn/shop/files/Off_Grid_Stores_Logo_1204x630.png
 url: https://raw.githubusercontent.com/api-evangelist/off-grid-stores-all-things-off-grid-solar/refs/heads/main/apis.yml
 x-type: company
