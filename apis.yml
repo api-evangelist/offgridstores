@@ -1,15 +1,14 @@
 aid: offgridstores
 name: Off Grid Stores - All Things Off-Grid Solar
-description: >-
-  Off Grid Stores is a US direct-to-consumer retailer of off-grid solar equipment — solar generators
-  and kits, portable and rigid panels, LiFePO4 battery banks, inverters, charge controllers and
-  composting toilets — operating from offgridstores.com. It publishes no traditional developer
-  program, but its Shopify-hosted storefront exposes a substantial, entirely anonymous machine
-  surface on its own domain: an agents.md/llms.txt agent contract (indexed by a dedicated
-  /sitemap_agentic_discovery.xml), a Universal Commerce Protocol (UCP) merchant profile at
-  /.well-known/ucp declaring UCP 2026-04-08, two live Model Context Protocol servers (a 13-tool UCP
-  commerce server and a 5-tool Storefront MCP server), an anonymously introspectable Storefront
-  GraphQL API of 422 types, and the storefront JSON endpoints for products, collections and cart.
+description: 'Off Grid Stores is a US direct-to-consumer retailer of off-grid solar equipment — solar
+  generators and kits, portable and rigid panels, LiFePO4 battery banks, inverters, charge controllers
+  and composting toilets — operating from offgridstores.com. It publishes no traditional developer program,
+  but its Shopify-hosted storefront exposes a substantial, entirely anonymous machine surface on its own
+  domain: an agents.md/llms.txt agent contract (indexed by a dedicated /sitemap_agentic_discovery.xml),
+  a Universal Commerce Protocol (UCP) merchant profile at /.well-known/ucp declaring UCP 2026-04-08, two
+  live Model Context Protocol servers (a 13-tool UCP commerce server and a 5-tool Storefront MCP server),
+  an anonymously introspectable Storefront GraphQL API of 422 types, and the storefront JSON endpoints
+  for products, collections and cart.'
 deliveryModel:
   model: saas
   open_source: false
@@ -82,18 +81,16 @@ maintainers:
 - FN: Off Grid Stores
   email: support@offgridstores.com
   url: https://offgridstores.com
-  tel: '+1-888-773-1462'
+  tel: +1-888-773-1462
 apis:
-- aid: offgridstores-ucp-commerce-mcp
+- aid: offgridstores:offgridstores-ucp-commerce-mcp
   name: Off Grid Stores UCP Commerce MCP Server
-  description: >-
-    Universal Commerce Protocol (UCP) shopping service, exposed over MCP at
-    https://offgridstores.com/api/ucp/mcp. The server identifies itself as "universal-commerce" 0.1.0
-    speaking MCP protocol 2025-06-18 and UCP 2026-04-08. tools/list answers anonymously with 13 tools
-    covering catalog search/lookup, cart create/read/update/cancel, checkout
-    create/read/update/complete/cancel, and order lookup. Every tools/call requires a resolvable UCP
-    agent profile URI, complete_checkout additionally requires an idempotency key, and checkout
-    completion requires contemporaneous buyer approval.
+  description: Universal Commerce Protocol (UCP) shopping service, exposed over MCP at https://offgridstores.com/api/ucp/mcp.
+    The server identifies itself as "universal-commerce" 0.1.0 speaking MCP protocol 2025-06-18 and UCP
+    2026-04-08. tools/list answers anonymously with 13 tools covering catalog search/lookup, cart create/read/update/cancel,
+    checkout create/read/update/complete/cancel, and order lookup. Every tools/call requires a resolvable
+    UCP agent profile URI, complete_checkout additionally requires an idempotency key, and checkout completion
+    requires contemporaneous buyer approval.
   humanURL: https://offgridstores.com/agents.md
   baseURL: https://offgridstores.com/api/ucp/mcp
   tags:
@@ -110,14 +107,13 @@ apis:
     url: mcp/offgridstores-tool-crosswalk.yml
   - type: Documentation
     url: https://offgridstores.com/agents.md
-- aid: offgridstores-storefront-mcp
+- aid: offgridstores:offgridstores-storefront-mcp
   name: Off Grid Stores Storefront MCP Server
-  description: >-
-    Shopify Storefront MCP server at https://offgridstores.com/api/mcp, identifying itself as
-    "storefront-renderer" 0.1.0 on MCP protocol 2025-06-18. Five tools that answer anonymously end to
-    end — search_catalog, get_product_details, get_cart, update_cart and
-    search_shop_policies_and_faqs. A live tools/call for "solar generator" returned real Off Grid
-    Stores product records during the 2026-08-26 probe.
+  description: Shopify Storefront MCP server at https://offgridstores.com/api/mcp, identifying itself
+    as "storefront-renderer" 0.1.0 on MCP protocol 2025-06-18. Five tools that answer anonymously end
+    to end — search_catalog, get_product_details, get_cart, update_cart and search_shop_policies_and_faqs.
+    A live tools/call for "solar generator" returned real Off Grid Stores product records during the 2026-08-26
+    probe.
   humanURL: https://offgridstores.com/agents.md
   baseURL: https://offgridstores.com/api/mcp
   tags:
@@ -128,13 +124,12 @@ apis:
   properties:
   - type: MCPServer
     url: mcp/offgridstores-mcp.yml
-- aid: offgridstores-storefront-graphql
+- aid: offgridstores:offgridstores-storefront-graphql
   name: Off Grid Stores Storefront GraphQL API
-  description: >-
-    Shopify Storefront GraphQL API served on the company's own host at
-    https://offgridstores.com/api/2025-10/graphql.json. Full introspection answers anonymously: 422
-    types, 34 query root fields and 41 mutations covering products, collections, blogs, pages, menus,
-    search, cart lifecycle and customer accounts. Query cost is returned in extensions.cost.
+  description: 'Shopify Storefront GraphQL API served on the company''s own host at https://offgridstores.com/api/2025-10/graphql.json.
+    Full introspection answers anonymously: 422 types, 34 query root fields and 41 mutations covering
+    products, collections, blogs, pages, menus, search, cart lifecycle and customer accounts. Query cost
+    is returned in extensions.cost.'
   humanURL: https://offgridstores.com/llms.txt
   baseURL: https://offgridstores.com/api/2025-10/graphql.json
   tags:
@@ -149,13 +144,12 @@ apis:
     url: graphql/offgridstores-storefront-introspection.json
   - type: DataModel
     url: data-model/offgridstores-data-model.yml
-- aid: offgridstores-storefront-json
+- aid: offgridstores:offgridstores-storefront-json
   name: Off Grid Stores Storefront JSON Endpoints
-  description: >-
-    Anonymous read-only JSON over the storefront: /products.json and /collections.json for the
-    catalog, /products/{handle}.json and /collections/{handle}/products.json for single resources,
-    and /cart.js for the session cart. Documented in the store's own /agents.md and /llms.txt, and
-    verified paging on limit/page during the 2026-08-26 probe.
+  description: 'Anonymous read-only JSON over the storefront: /products.json and /collections.json for
+    the catalog, /products/{handle}.json and /collections/{handle}/products.json for single resources,
+    and /cart.js for the session cart. Documented in the store''s own /agents.md and /llms.txt, and verified
+    paging on limit/page during the 2026-08-26 probe.'
   humanURL: https://offgridstores.com/llms.txt
   baseURL: https://offgridstores.com
   tags:
