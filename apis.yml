@@ -56,7 +56,7 @@ tags:
 - Agentic Commerce
 - MCP
 - GraphQL
-- UCP
+- Universal Commerce Protocol
 tags_raw:
 - Company
 - Commerce
@@ -94,6 +94,13 @@ apis:
   humanURL: https://offgridstores.com/agents.md
   baseURL: https://offgridstores.com/api/ucp/mcp
   tags:
+  - MCP
+  - Universal Commerce Protocol
+  - Commerce
+  - Checkout
+  - Cart
+  - Catalog
+  tags_raw:
   - MCP
   - UCP
   - Commerce
