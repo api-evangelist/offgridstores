@@ -114,6 +114,9 @@ apis:
     url: mcp/offgridstores-tool-crosswalk.yml
   - type: Documentation
     url: https://offgridstores.com/agents.md
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: ucp
 - aid: offgridstores:offgridstores-storefront-mcp
   name: Off Grid Stores Storefront MCP Server
   description: Shopify Storefront MCP server at https://offgridstores.com/api/mcp, identifying itself
@@ -131,6 +134,9 @@ apis:
   properties:
   - type: MCPServer
     url: mcp/offgridstores-mcp.yml
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: storefront-mcp
 - aid: offgridstores:offgridstores-storefront-graphql
   name: Off Grid Stores Storefront GraphQL API
   description: 'Shopify Storefront GraphQL API served on the company''s own host at https://offgridstores.com/api/2025-10/graphql.json.
@@ -151,6 +157,9 @@ apis:
     url: graphql/offgridstores-storefront-introspection.json
   - type: DataModel
     url: data-model/offgridstores-data-model.yml
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: storefront-graphql
 - aid: offgridstores:offgridstores-storefront-json
   name: Off Grid Stores Storefront JSON Endpoints
   description: 'Anonymous read-only JSON over the storefront: /products.json and /collections.json for
@@ -158,11 +167,13 @@ apis:
     and /cart.js for the session cart. Documented in the store''s own /agents.md and /llms.txt, and verified
     paging on limit/page during the 2026-08-26 probe.'
   humanURL: https://offgridstores.com/llms.txt
-  baseURL: https://offgridstores.com
   tags:
   - JSON
   - Catalog
   - Cart
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: storefront-json
 common:
 - type: Website
   url: https://offgridstores.com
